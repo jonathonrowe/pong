@@ -13,7 +13,7 @@ def main():
     clock = pygame.time.Clock()
     dt = 0
 
-    font = pygame.font.SysFont(FONT, FONT_SIZE)
+    score_font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -25,7 +25,7 @@ def main():
     player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
     ball = Ball((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
     ball.set_random_velocity()
-    
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -37,8 +37,19 @@ def main():
 
         updatable.update(dt)
 
+        if ball.check_collision(player1):
+            ball.velocity.x = -ball.velocity.x
+        if ball.check_collision(player2):
+            ball.velocity.x = -ball.velocity.x
+
         for sprite in drawable:
             sprite.draw(screen)
+
+        player1_score_surface = score_font.render(str(player1.score), True, WHITE)
+        screen.blit(player1_score_surface, ((SCREEN_WIDTH / 2) - 20, 20))
+        
+        player2_score_surface = score_font.render(str(player2.score), True, WHITE)
+        screen.blit(player2_score_surface, ((SCREEN_WIDTH / 2) + 20, 20))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

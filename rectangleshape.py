@@ -19,3 +19,7 @@ class RectangleShape(pygame.sprite.Sprite):
         # must override
         pass
 
+    def check_collision(self, other):
+        x_overlap = (self.position.x + self.width > other.position.x) and (self.position.x < other.width + other.position.x)
+        y_overlap = (self.position.y + self.height > other.position.y) and (self.position.y < other.height + other.position.y)
+        return x_overlap and y_overlap

@@ -6,7 +6,7 @@ SCREEN_HEIGHT = 720
 # Scoring dimensions and attributes
 
 FONT = "ubuntumono"
-FONT_SIZE = 20
+SCORE_FONT_SIZE = 50
 
 # Paddle dimensions
 

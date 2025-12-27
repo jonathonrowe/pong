@@ -7,6 +7,7 @@ class Player(RectangleShape):
         super().__init__(x, y, PADDLE_WIDTH, PADDLE_HEIGHT)
         self.is_human = is_human
         self.is_player1 = is_player1
+        self.score = 0
 
     def draw(self, screen):
         pygame.draw.rect(screen, WHITE, (self.position.x, self.position.y, self.width, self.height))

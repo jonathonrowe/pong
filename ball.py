@@ -1,7 +1,7 @@
 import pygame
 import math
 import random
-from constants import BALL_LENGTH, WHITE, BALL_SPEED
+from constants import BALL_LENGTH, WHITE, BALL_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH
 from rectangleshape import RectangleShape
 
 class Ball(RectangleShape):
@@ -13,6 +13,8 @@ class Ball(RectangleShape):
         pygame.draw.rect(screen, WHITE, (self.position.x, self.position.y, self.width, self.height))
 
     def update(self, dt):
+        if self.position.y + self.height >= SCREEN_HEIGHT or self.position.y <= 0:
+            self.velocity.y = -self.velocity.y
         self.position += (self.velocity * dt)
 
     def set_random_velocity(self):
