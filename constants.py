@@ -13,8 +13,9 @@ FONT_SIZE = 20
 PADDLE_WIDTH = SCREEN_WIDTH * 0.01
 PADDLE_HEIGHT = SCREEN_HEIGHT * 0.2
 
-# Ball dimensions
+# Ball dimensions and attributes
 BALL_LENGTH = 15
+BALL_SPEED = 200
 
 # Colors
 

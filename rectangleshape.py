@@ -6,10 +6,10 @@ class RectangleShape(pygame.sprite.Sprite):
             super().__init__(self.containers)
         else:
             super().__init__()
-        self.x = x
-        self.y = y
         self.width = width
         self.height = height
+        self.position = pygame.Vector2(x, y)
+        self.velocity = pygame.Vector2(0, 0)
     
     def draw(self, screen):
         # must override

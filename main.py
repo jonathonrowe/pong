@@ -21,10 +21,11 @@ def main():
     Player.containers = (updatable, drawable)
     Ball.containers = (updatable, drawable)
 
-    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True)
-    player_cpu = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), False)
+    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
+    player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
     ball = Ball((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
-
+    ball.set_random_velocity()
+    
     running = True
     while running:
         for event in pygame.event.get():
@@ -32,6 +33,8 @@ def main():
                 running = False
             
         screen.fill("black")
+
+
         updatable.update(dt)
 
         for sprite in drawable:
