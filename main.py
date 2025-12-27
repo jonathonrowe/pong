@@ -14,6 +14,7 @@ def main():
     dt = 0
 
     score_font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
+    font = pygame.font.SysFont(FONT, FONT_SIZE)
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -24,32 +25,55 @@ def main():
     player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
     player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
     ball = Ball((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
-    ball.set_random_velocity()
+    ball.set_random_velocity("left")
 
+    game_state = "start"
     running = True
+
+    def draw_text(text, font, color, surface):
+        textobj = font.render(text, True, color)
+        textrect = textobj.get_rect()
+        textrect.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+        surface.blit(textobj, textrect)
+
+    # Main Game Loop
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    paused = "paused"
+
         screen.fill("black")
 
+        if game_state == "playing":
 
-        updatable.update(dt)
+            updatable.update(dt)
 
-        if ball.check_collision(player1):
-            ball.velocity.x = -ball.velocity.x
-        if ball.check_collision(player2):
-            ball.velocity.x = -ball.velocity.x
+            if ball.check_collision(player1):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_collision(player2):
+                ball.velocity.x = -ball.velocity.x
 
-        for sprite in drawable:
-            sprite.draw(screen)
+            if ball.position.x + ball.width < 0:
+                player1.score += 1
+                ball.reset("right")
+            if ball.position.x > SCREEN_WIDTH:
+                player2.score += 1
+                ball.reset("left")
+
+            for sprite in drawable:
+                sprite.draw(screen)
+        
+        else:
+            draw_text("PAUSED", font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 
         player1_score_surface = score_font.render(str(player1.score), True, WHITE)
-        screen.blit(player1_score_surface, ((SCREEN_WIDTH / 2) - 20, 20))
+        screen.blit(player1_score_surface, ((SCREEN_WIDTH / 2) + 50, 20))
         
         player2_score_surface = score_font.render(str(player2.score), True, WHITE)
-        screen.blit(player2_score_surface, ((SCREEN_WIDTH / 2) + 20, 20))
+        screen.blit(player2_score_surface, ((SCREEN_WIDTH / 2) - 50, 20))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
