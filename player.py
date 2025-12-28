@@ -12,7 +12,7 @@ class Player(RectangleShape):
     def draw(self, screen):
         pygame.draw.rect(screen, WHITE, (self.position.x, self.position.y, self.width, self.height))
 
-    def update(self, dt, ball="ball"):     
+    def update(self, dt, ball=None):     
         keys = pygame.key.get_pressed()
     
         if self.is_human and self.is_player1:
