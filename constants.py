@@ -6,7 +6,14 @@ SCREEN_HEIGHT = 720
 # Fonts and font sizing
 
 FONT = "ubuntumono"
-FONT_SIZE = 100
+TITLE_FONT_SIZE = 100
+PRESS_SPACE_FONT_SIZE = 50
+
+# Messages
+
+TITLE = "PONG by Jon"
+PRESS_SPACE = "Press SPACE to Start"
+PRESS_TUTORIAL = "Press T for Tutorial"
 
 # Scoring dimensions and attributes
 
@@ -19,7 +26,7 @@ PADDLE_HEIGHT = SCREEN_HEIGHT * 0.2
 
 # Ball dimensions and attributes
 BALL_LENGTH = 15
-BALL_SPEED = 300
+BALL_SPEED = 500
 
 # Colors
 

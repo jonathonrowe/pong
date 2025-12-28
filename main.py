@@ -14,7 +14,14 @@ def main():
     dt = 0
 
     score_font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
-    font = pygame.font.SysFont(FONT, FONT_SIZE)
+    title_font = pygame.font.SysFont(FONT, TITLE_FONT_SIZE)
+    press_key_font = pygame.font.SysFont(FONT, PRESS_SPACE_FONT_SIZE)
+
+    def draw_text(text, font, color, surface, x, y):
+        textobj = font.render(text, True, color)
+        textrect = textobj.get_rect()
+        textrect.center = (x, y)
+        surface.blit(textobj, textrect)
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -28,15 +35,11 @@ def main():
     ball.set_random_velocity("left")
 
     game_state = "start"
+    tutorial_step = 0
+    tutorial_player1 = None
+    # Tutorial timer in seconds
+    tutorial_timer = 0
     running = True
-
-    def draw_text(text, font, color, surface, x, y):
-        textobj = font.render(text, True, color)
-        textrect = textobj.get_rect()
-        textrect.center = (x, y)
-        surface.blit(textobj, textrect)
-
-    title = "PONG by Jon"
 
     # Main Game Loop
     while running:
@@ -46,15 +49,73 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_state = "paused"
-            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     game_state = "playing"
+                if event.key == pygame.K_t:
+                    Player.containers = ()
+                    tutorial_player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
+                    tutorial_player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
+                    Player.containers = (updatable, drawable)
+                    game_state = "tutorial"
 
         screen.fill("black")
 
         if game_state == "start":
-            draw_text(title, font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .2))
+            draw_text(TITLE, title_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .2))
+            draw_text(PRESS_SPACE, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .8))
+            draw_text(PRESS_TUTORIAL, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .7))
         
+        elif game_state == "tutorial":
+            tutorial_player1.update(dt)
+            tutorial_player1.draw(screen)
+            tutorial_player2.update(dt)
+            tutorial_player2.draw(screen)
+            if tutorial_step == 0:
+                if tutorial_timer > 0:
+                    draw_text("Good Job!", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .7))
+                    tutorial_timer -= dt
+                    if tutorial_timer <= 0:
+                        tutorial_step = 1
+                else:
+                    draw_text("Press UP to move up", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .5))
+                    if tutorial_player1.position.y <= (SCREEN_HEIGHT * .45):
+                        tutorial_timer = 2.0
+            if tutorial_step == 1:
+                if tutorial_timer > 0:
+                    draw_text("Good Job!", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .7))
+                    tutorial_timer -= dt
+                    if tutorial_timer <= 0:
+                        tutorial_step = 2
+                else:
+                    draw_text("Press DOWN to move down", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .5))
+                    if tutorial_player1.position.y >= (SCREEN_HEIGHT * .55):
+                        tutorial_timer = 2.0
+            if tutorial_step == 2:
+                if tutorial_timer > 0:
+                    draw_text("Good Job!", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .7))
+                    tutorial_timer -= dt
+                    if tutorial_timer <= 0:
+                        tutorial_step = 3
+                else:
+                    draw_text("For Player 2", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .3))
+                    draw_text("Press W to move up", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .5))
+                    if tutorial_player2.position.y <= (SCREEN_HEIGHT * .45):
+                        tutorial_timer = 2.0
+            if tutorial_step == 3:
+                if tutorial_timer > 0:
+                    draw_text("Good Job!", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .7))
+                    tutorial_timer -= dt
+                    if tutorial_timer <= 0:
+                        tutorial_step = 0
+                        tutorial_player1 = None
+                        tutorial_player2 = None
+                        game_state = "start"
+                else:
+                    draw_text("For Player 2", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .3))
+                    draw_text("Press S to move down", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .5))
+                    if tutorial_player2.position.y >= (SCREEN_HEIGHT * .55):
+                        tutorial_timer = 2.0
+
         elif game_state == "playing":
 
             updatable.update(dt)
@@ -74,14 +135,15 @@ def main():
             for sprite in drawable:
                 sprite.draw(screen)
         
-        elif game_state == "paused":
-            draw_text("PAUSED", font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
-
-        player1_score_surface = score_font.render(str(player1.score), True, WHITE)
-        screen.blit(player1_score_surface, ((SCREEN_WIDTH / 2) + 50, 20))
+            player1_score_surface = score_font.render(str(player1.score), True, WHITE)
+            screen.blit(player1_score_surface, ((SCREEN_WIDTH / 2) + 50, 20))
         
-        player2_score_surface = score_font.render(str(player2.score), True, WHITE)
-        screen.blit(player2_score_surface, ((SCREEN_WIDTH / 2) - 50, 20))
+            player2_score_surface = score_font.render(str(player2.score), True, WHITE)
+            screen.blit(player2_score_surface, ((SCREEN_WIDTH / 2) - 50, 20))
+
+        elif game_state == "paused":
+            draw_text("PAUSED", title_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+            draw_text(PRESS_SPACE, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .8))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

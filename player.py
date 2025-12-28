@@ -12,7 +12,7 @@ class Player(RectangleShape):
     def draw(self, screen):
         pygame.draw.rect(screen, WHITE, (self.position.x, self.position.y, self.width, self.height))
 
-    def update(self, dt):
+    def update(self, dt):     
         keys = pygame.key.get_pressed()
     
         if self.is_human and self.is_player1:
@@ -31,3 +31,8 @@ class Player(RectangleShape):
 
     def move(self, dt):
         self.position.y += dt * PLAYER_SPEED
+        # Stop paddle at boundary.
+        if self.position.y <= 0:
+            self.position.y = 0
+        if self.position.y + self.height >= SCREEN_HEIGHT:
+            self.position.y = SCREEN_HEIGHT - self.height
