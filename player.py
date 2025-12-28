@@ -12,7 +12,7 @@ class Player(RectangleShape):
     def draw(self, screen):
         pygame.draw.rect(screen, WHITE, (self.position.x, self.position.y, self.width, self.height))
 
-    def update(self, dt):     
+    def update(self, dt, ball="ball"):     
         keys = pygame.key.get_pressed()
     
         if self.is_human and self.is_player1:
@@ -25,9 +25,11 @@ class Player(RectangleShape):
                 self.move(-dt)
             if keys[pygame.K_s]:
                 self.move(dt)
-        else:
-            # write player_cpu ai code here
-            pass
+        elif not self.is_human and not self.is_player1:
+            if self.position.y > ball.position.y:
+                self.move(-dt)
+            if self.position.y + self.height < ball.position.y + ball.height:
+                self.move(dt)
 
     def move(self, dt):
         self.position.y += dt * PLAYER_SPEED

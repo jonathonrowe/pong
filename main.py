@@ -29,13 +29,14 @@ def main():
     Player.containers = (updatable, drawable)
     Ball.containers = (updatable, drawable)
 
-    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
-    player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
     ball = Ball((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
     ball.set_random_velocity("left")
 
     game_state = "start"
     tutorial_step = 0
+    player1 = None
+    player2 = None
+    player_cpu = None
     tutorial_player1 = None
     # Tutorial timer in seconds
     tutorial_timer = 0
@@ -49,8 +50,14 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_state = "paused"
-                if event.key == pygame.K_SPACE:
-                    game_state = "playing"
+                if event.key == pygame.K_1:
+                    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
+                    player_cpu = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), False, False)
+                    game_state = "one"
+                if event.key == pygame.K_2:
+                    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
+                    player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
+                    game_state = "two"
                 if event.key == pygame.K_t:
                     Player.containers = ()
                     tutorial_player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
@@ -62,8 +69,9 @@ def main():
 
         if game_state == "start":
             draw_text(TITLE, title_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .2))
-            draw_text(PRESS_SPACE, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .8))
-            draw_text(PRESS_TUTORIAL, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .7))
+            draw_text("Press 1 for single player mode", press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .7))
+            draw_text("Press 2 for two player mode", press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .8))
+            draw_text(PRESS_TUTORIAL, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .6))
         
         elif game_state == "tutorial":
             tutorial_player1.update(dt)
@@ -116,7 +124,34 @@ def main():
                     if tutorial_player2.position.y >= (SCREEN_HEIGHT * .55):
                         tutorial_timer = 2.0
 
-        elif game_state == "playing":
+        elif game_state == "one":
+            
+            ball.update(dt)
+            player1.update(dt)
+            player_cpu.update(dt, ball=ball)
+
+            if ball.check_collision(player1):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_collision(player_cpu):
+                ball.velocity.x = -ball.velocity.x
+
+            if ball.position.x + ball.width < 0:
+                player1.score += 1
+                ball.reset("right")
+            if ball.position.x > SCREEN_WIDTH:
+                player_cpu.score += 1
+                ball.reset("left")
+            
+            for sprite in drawable:
+                sprite.draw(screen)
+
+            player1_score_surface = score_font.render(str(player1.score), True, WHITE)
+            screen.blit(player1_score_surface, ((SCREEN_WIDTH / 2) + 50, 20))
+        
+            player_cpu_score_surface = score_font.render(str(player_cpu.score), True, WHITE)
+            screen.blit(player_cpu_score_surface, ((SCREEN_WIDTH / 2) - 50, 20)) 
+
+        elif game_state == "two":
 
             updatable.update(dt)
 
