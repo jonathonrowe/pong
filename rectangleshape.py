@@ -23,3 +23,27 @@ class RectangleShape(pygame.sprite.Sprite):
         x_overlap = (self.position.x + self.width > other.position.x) and (self.position.x < other.width + other.position.x)
         y_overlap = (self.position.y + self.height > other.position.y) and (self.position.y < other.height + other.position.y)
         return x_overlap and y_overlap
+    
+    def check_center_collision(self, other):
+        center_x_overlap = (self.position.x + self.width > other.position.x) and (self.position.x < other.width + other.position.x)
+        center_y_overlap = (
+            (self.position.y + self.height < (other.position.y + (other.height * .75))) and
+            (self.position.y > (other.position.y + (other.height * .25)))
+        )
+        return center_x_overlap and center_y_overlap
+
+    def check_top_edge_collision(self, other):
+        edge_x_overlap = (self.position.x + self.width > other.position.x) and (self.position.x < other.width + other.position.x)
+        edge_y_overlap = (
+            (self.position.y + self.height > other.position.y) and
+            (self.position.y < (other.position.y + (other.height * .25)))
+        )
+        return edge_x_overlap and edge_y_overlap
+
+    def check_bottom_edge_collision(self, other):
+        edge_x_overlap = (self.position.x + self.width > other.position.x) and (self.position.x < other.width + other.position.x)
+        edge_y_overlap = (
+            (self.position.y + self.height > (other.position.y + (other.height * .75))) and
+            (self.position.y < (other.position.y + other.height))
+        )
+        return edge_x_overlap and edge_y_overlap

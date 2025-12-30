@@ -30,9 +30,10 @@ def main():
     Ball.containers = (updatable, drawable)
 
     ball = Ball((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
-    ball.set_random_velocity("left")
+    ball.set_start_random_velocity("left")
 
     game_state = "start"
+    paused = False
     tutorial_step = 0
     player1 = None
     player2 = None
@@ -49,7 +50,7 @@ def main():
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    game_state = "paused"
+                    paused = not paused
                 if event.key == pygame.K_1:
                     player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
                     player_cpu = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), False, False)
@@ -130,9 +131,18 @@ def main():
             player1.update(dt)
             player_cpu.update(dt, ball=ball)
 
-            if ball.check_collision(player1):
+            if ball.check_center_collision(player1):
                 ball.velocity.x = -ball.velocity.x
-            if ball.check_collision(player_cpu):
+            if ball.check_center_collision(player_cpu):
+                ball.velocity.x = -ball.velocity.x
+            # Need to update these with changes in angle, too
+            if ball.check_top_edge_collision(player1):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_top_edge_collision(player_cpu):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_bottom_edge_collision(player1):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_bottom_edge_collision(player_cpu):
                 ball.velocity.x = -ball.velocity.x
 
             if ball.position.x + ball.width < 0:
@@ -155,10 +165,20 @@ def main():
 
             updatable.update(dt)
 
-            if ball.check_collision(player1):
+            if ball.check_center_collision(player1):
                 ball.velocity.x = -ball.velocity.x
-            if ball.check_collision(player2):
+            if ball.check_center_collision(player2):
                 ball.velocity.x = -ball.velocity.x
+            # Need to update these with changes in angle, too
+            if ball.check_top_edge_collision(player1):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_top_edge_collision(player2):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_bottom_edge_collision(player1):
+                ball.velocity.x = -ball.velocity.x
+            if ball.check_bottom_edge_collision(player2):
+                ball.velocity.x = -ball.velocity.x
+            
 
             if ball.position.x + ball.width < 0:
                 player1.score += 1
@@ -176,7 +196,7 @@ def main():
             player2_score_surface = score_font.render(str(player2.score), True, WHITE)
             screen.blit(player2_score_surface, ((SCREEN_WIDTH / 2) - 50, 20))
 
-        elif game_state == "paused":
+        elif paused:
             draw_text("PAUSED", title_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
             draw_text(PRESS_SPACE, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .8))
 
