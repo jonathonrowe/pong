@@ -3,8 +3,9 @@ from rectangleshape import RectangleShape
 from constants import *
 
 class Player(RectangleShape):
-    def __init__(self, x, y, is_human, is_player1):
+    def __init__(self, x, y, name, is_human, is_player1):
         super().__init__(x, y, PADDLE_WIDTH, PADDLE_HEIGHT)
+        self.name = name
         self.is_human = is_human
         self.is_player1 = is_player1
         self.score = 0

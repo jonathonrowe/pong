@@ -7,7 +7,7 @@ SCREEN_HEIGHT = 720
 
 FONT = "ubuntumono"
 TITLE_FONT_SIZE = 100
-PRESS_SPACE_FONT_SIZE = 50
+PRESS_KEY_FONT_SIZE = 50
 
 # Messages
 
@@ -17,7 +17,7 @@ PRESS_TUTORIAL = "Press T for Tutorial"
 
 # Scoring dimensions and attributes
 
-SCORE_FONT_SIZE = 50
+SCORE_FONT_SIZE = 80
 
 # Paddle dimensions
 
@@ -26,7 +26,7 @@ PADDLE_HEIGHT = SCREEN_HEIGHT * 0.2
 
 # Ball dimensions and attributes
 BALL_LENGTH = 15
-BALL_SPEED = 500
+BALL_SPEED = 400
 
 # Colors
 

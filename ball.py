@@ -17,11 +17,11 @@ class Ball(RectangleShape):
             self.velocity.y = -self.velocity.y
         self.position += (self.velocity * dt)
 
-    def set_start_random_velocity(self, direction):
+    def set_random_velocity(self, direction, change):
         if direction == "left":
-            degrees = random.uniform(150, 210)
+            degrees = random.uniform(180 - change, 180 + change)
         if direction == "right":
-            degrees = random.uniform(-30, 30)
+            degrees = random.uniform(-change, change)
         radians = math.radians(degrees)
         self.velocity.x = math.cos(radians) * BALL_SPEED
         self.velocity.y = math.sin(radians) * BALL_SPEED
@@ -29,6 +29,6 @@ class Ball(RectangleShape):
     def reset(self, direction):
         self.position = pygame.Vector2((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
         if direction == "right":
-            self.set_start_random_velocity("right")
+            self.set_random_velocity("right", 30)
         if direction == "left":
-            self.set_start_random_velocity("left")
+            self.set_random_velocity("left", 30)

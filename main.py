@@ -15,7 +15,7 @@ def main():
 
     score_font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
     title_font = pygame.font.SysFont(FONT, TITLE_FONT_SIZE)
-    press_key_font = pygame.font.SysFont(FONT, PRESS_SPACE_FONT_SIZE)
+    press_key_font = pygame.font.SysFont(FONT, PRESS_KEY_FONT_SIZE)
 
     def draw_text(text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
@@ -30,7 +30,7 @@ def main():
     Ball.containers = (updatable, drawable)
 
     ball = Ball((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
-    ball.set_start_random_velocity("left")
+    ball.set_random_velocity("left", 30)
 
     game_state = "start"
     paused = False
@@ -39,7 +39,9 @@ def main():
     player2 = None
     player_cpu = None
     tutorial_player1 = None
-    # Tutorial timer in seconds
+    winner = None
+    # Timer in seconds
+    game_over_timer = 0
     tutorial_timer = 0
     running = True
 
@@ -52,17 +54,17 @@ def main():
                 if event.key == pygame.K_p:
                     paused = not paused
                 if event.key == pygame.K_1:
-                    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
-                    player_cpu = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), False, False)
+                    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), "Player 1", True, True)
+                    player_cpu = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), "Computer", False, False)
                     game_state = "one"
                 if event.key == pygame.K_2:
-                    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
-                    player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
+                    player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), "Player 1", True, True)
+                    player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), "Player 2", True, False)
                     game_state = "two"
                 if event.key == pygame.K_t:
                     Player.containers = ()
-                    tutorial_player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), True, True)
-                    tutorial_player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), True, False)
+                    tutorial_player1 = Player((SCREEN_WIDTH * 0.95), (SCREEN_HEIGHT / 2), "Player 1", True, True)
+                    tutorial_player2 = Player((SCREEN_WIDTH * 0.05), (SCREEN_HEIGHT /2), "Player 2", True, False)
                     Player.containers = (updatable, drawable)
                     game_state = "tutorial"
 
@@ -131,19 +133,28 @@ def main():
             player1.update(dt)
             player_cpu.update(dt, ball=ball)
 
+            if player1.score >= 10:
+                winner = player1.name
+                game_over_timer = 3.0
+                game_state = "game over"
+            if player_cpu.score >= 10:
+                game_over_timer = 3.0
+                winner = player_cpu.name
+                game_state = "game_over"
+
             if ball.check_center_collision(player1):
                 ball.velocity.x = -ball.velocity.x
             if ball.check_center_collision(player_cpu):
                 ball.velocity.x = -ball.velocity.x
-            # Need to update these with changes in angle, too
+
             if ball.check_top_edge_collision(player1):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("left", 45)
             if ball.check_top_edge_collision(player_cpu):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("right", 45)
             if ball.check_bottom_edge_collision(player1):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("left", 45)
             if ball.check_bottom_edge_collision(player_cpu):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("right", 45)
 
             if ball.position.x + ball.width < 0:
                 player1.score += 1
@@ -165,19 +176,28 @@ def main():
 
             updatable.update(dt)
 
+            if player1.score >= 10:
+                winner = player1.name
+                game_over_timer = 3.0
+                game_state = "game over"
+            if player2.score >= 10:
+                game_over_timer = 3.0
+                winner = player2.name
+                game_state = "game_over"
+
             if ball.check_center_collision(player1):
                 ball.velocity.x = -ball.velocity.x
             if ball.check_center_collision(player2):
                 ball.velocity.x = -ball.velocity.x
             # Need to update these with changes in angle, too
             if ball.check_top_edge_collision(player1):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("left", 45)
             if ball.check_top_edge_collision(player2):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("right", 45)
             if ball.check_bottom_edge_collision(player1):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("left", 45)
             if ball.check_bottom_edge_collision(player2):
-                ball.velocity.x = -ball.velocity.x
+                ball.set_random_velocity("right", 45)
             
 
             if ball.position.x + ball.width < 0:
@@ -199,6 +219,15 @@ def main():
         elif paused:
             draw_text("PAUSED", title_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
             draw_text(PRESS_SPACE, press_key_font, WHITE, screen, (SCREEN_WIDTH / 2), (SCREEN_HEIGHT * .8))
+
+        elif game_state == "game over":
+            if game_over_timer > 0:
+                draw_text("Game Over", title_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .4))
+                draw_text(f"{winner} Wins!", press_key_font, WHITE, screen, (SCREEN_WIDTH * .5), (SCREEN_HEIGHT * .6))
+                game_over_timer -= dt
+                if game_over_timer <= 0:
+                    game_state = "start"
+
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
